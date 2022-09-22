@@ -1,29 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { FormEvent } from 'react'
 import Todos from './components/Todos'
 import Header from './components/Header'
+import { callbackify } from 'util';
+
+const api = "http://localhost:5000/"
+
+
 function App() {
   const [todos, settodos] = useState<String[]>([])
-
-
-
   const [popupActive, setPopupActive] = useState(false)
 
-  let inputSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("worked");
-    let value = e.currentTarget.input.value
+  useEffect(() => { getApiData() }, [])
 
-    settodos(oldarray => [...oldarray, value])
-    e.currentTarget.input.value = ""
+
+  const getApiData = async () => {
+    const response = await fetch(api)
+    const data = await response.json()
+    settodos([])
+    await data.map((item: any) => {
+      settodos(prev => [...prev, item.todo])
+    })
+    console.log(todos);
+
   }
+
+  const setApiData = async (value: any) => {
+    const data = await fetch(api, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ todo: value })
+    })
+    console.log("data posted");
+    await getApiData()
+  }
+
+
+  let inputSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let value = e.currentTarget.input.value
+    console.log(value);
+    // settodos(oldarray => [...oldarray, value])
+    await setApiData(value)
+  }
+  const arraylength = 0
 
   return (
     <div className="App  bg-gray-900 h-screen w-full flex justify-center items-center ">
       <div className="container sm:w-5/12 sm:h-5/6 h-full w-full px-4 sm:px-10 bg-white rounded-lg overflow-auto">
         <div className='flex justify-between items-center  pt-5 '>
           <Header />
-          3 tasks
+          {arraylength} tasks
         </div>
         <div className=' flex justify-end sm:pr-5'>
           <button onClick={() => {
