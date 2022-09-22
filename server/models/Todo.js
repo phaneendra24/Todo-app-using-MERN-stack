@@ -2,12 +2,15 @@ const mongoose = require('mongoose')
 
 const todoschema = mongoose.Schema({
     todo: {
-        type: String
+        type: String,
     },
+
     date: {
         type: Date,
         default: Date.now()
     }
 })
 
-module.exports = mongoose.model('Todo', todoschema)
+const Todo = mongoose.model('Todo', todoschema)
+
+module.exports = Todo

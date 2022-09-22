@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import type { FormEvent } from 'react'
 import Todos from './components/Todos'
 import Header from './components/Header'
-import { callbackify } from 'util';
 
 const api = "http://localhost:5000/"
 
 
 function App() {
-  const [todos, settodos] = useState<String[]>([])
+  const [todos, settodos] = useState<{ todo: string; id: any }[]>([{
+    todo: "",
+    id: 0
+  }])
   const [popupActive, setPopupActive] = useState(false)
 
   useEffect(() => { getApiData() }, [])
@@ -19,9 +21,11 @@ function App() {
     const data = await response.json()
     settodos([])
     await data.map((item: any) => {
-      settodos(prev => [...prev, item.todo])
+      const response = { todo: JSON.stringify(item.todo), id: item._id }
+      settodos(todos => [...todos, response])
+
+      return null
     })
-    console.log(todos);
 
   }
 
@@ -33,7 +37,6 @@ function App() {
       },
       body: JSON.stringify({ todo: value })
     })
-    console.log("data posted");
     await getApiData()
   }
 
@@ -41,9 +44,10 @@ function App() {
   let inputSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let value = e.currentTarget.input.value
-    console.log(value);
-    // settodos(oldarray => [...oldarray, value])
     await setApiData(value)
+      .then(
+        e.currentTarget.input.value = null
+      )
   }
   const arraylength = 0
 
@@ -51,8 +55,7 @@ function App() {
     <div className="App  bg-gray-900 h-screen w-full flex justify-center items-center ">
       <div className="container sm:w-5/12 sm:h-5/6 h-full w-full px-4 sm:px-10 bg-white rounded-lg overflow-auto">
         <div className='flex justify-between items-center  pt-5 '>
-          <Header />
-          {arraylength} tasks
+          <Header todos={todos} />
         </div>
         <div className=' flex justify-end sm:pr-5'>
           <button onClick={() => {
@@ -76,7 +79,7 @@ function App() {
                   </div>
                   <form onSubmit={e => inputSubmit(e)} >
                     <input required name='input' className='text-black w-full  shadow-[0_3px_10px_rgb(0,0,0,0.2)] outline-none p-2' />
-                    <button className='exit-btn mt-3'  >
+                    <button className='exit-btn mt-3 sm:h-14 sm:w-32 w-20 h-12 flex justify-center items-center'  >
                       CREATE TASK
                     </button>
                   </form>
@@ -86,7 +89,7 @@ function App() {
               : null}
 
 
-          <Todos todos={todos} settodos={settodos} />
+          <Todos todos={todos} settodos={settodos} getdata={getApiData} />
 
 
 

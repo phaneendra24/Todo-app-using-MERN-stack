@@ -8,9 +8,12 @@ require('dotenv/config')
 app.use(express.json())
 app.use(cors())
 
+
+
 app.get('/', async (req, res) => {
     try {
         const todoarray = await Todo.find()
+        console.log(todoarray);
         res.json(todoarray)
     }
     catch (err) {
@@ -30,6 +33,21 @@ app.post('/', async (req, res) => {
     }
 
 })
+
+app.delete('/:id', async (req, res) => {
+    try {
+        console.log();
+        const deletePost = await Todo.findByIdAndDelete(req.params.id)
+        if (!deletePost) throw Error('unable to delete the post')
+        res.json({ deletePost })
+    }
+    catch (err) {
+        res.json({ msg: err })
+    }
+})
+
+
+
 
 mongoose.connect(process.env.db_connect, { useNewUrlParser: true })
     .then(() => {
