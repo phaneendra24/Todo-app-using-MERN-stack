@@ -4,7 +4,9 @@ const todoschema = mongoose.Schema({
     todo: {
         type: String,
     },
-
+    completed: {
+        type: Boolean
+    },
     date: {
         type: Date,
         default: Date.now()

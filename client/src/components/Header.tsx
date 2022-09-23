@@ -19,7 +19,7 @@ export default function Header({ todos }: props) {
   const arraylength = todos.length
   return (
     <>
-      <div className="w-full flex items-center justify-between h-auto  ">
+      <div className="w-full  flex items-center justify-between h-auto  ">
         <div>
           <h1 className='lm:text-4xl sm:text-3xl text-2xl pr-2'>{today},{curret_date}th</h1>
           <p>{month}</p>

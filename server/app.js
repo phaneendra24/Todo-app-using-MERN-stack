@@ -22,7 +22,6 @@ app.get('/', async (req, res) => {
 })
 
 app.post('/', async (req, res) => {
-    console.log(req.body);
     const newpost = new Todo(req.body)
     try {
         const post = await newpost.save()
@@ -31,12 +30,19 @@ app.post('/', async (req, res) => {
     } catch (error) {
         res.json(error)
     }
-
 })
+
+app.put('/:id', async (req, res) => {
+    const update = await Todo.findById(req.params.id)
+    console.log("update");
+    update.completed = req.body.completed
+    update.save()
+    res.json(update)
+})
+
 
 app.delete('/:id', async (req, res) => {
     try {
-        console.log();
         const deletePost = await Todo.findByIdAndDelete(req.params.id)
         if (!deletePost) throw Error('unable to delete the post')
         res.json({ deletePost })
@@ -57,8 +63,8 @@ mongoose.connect(process.env.db_connect, { useNewUrlParser: true })
         console.log(err);
     })
 
+const PORT = process.env.PORT || 5000
 
-
-app.listen(5000, () => {
+app.listen(PORT, () => {
     console.log("server started");
 })

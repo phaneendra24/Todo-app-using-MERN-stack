@@ -1,13 +1,15 @@
-import React, { ReactNode, useState } from "react";
+import React, { useState } from "react";
 
 type props = {
     todos: {
         todo: string;
         id: any;
+        completed: Boolean;
     }[]
     settodos: React.Dispatch<React.SetStateAction<{
         todo: string;
         id: any;
+        completed: Boolean;
     }[]>>
     getdata: () => Promise<void>
 }
@@ -18,20 +20,45 @@ export default function Todo({ todos, settodos, getdata }: props) {
 
         const response = await fetch(api + id, {
             method: "DElETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
         })
-        const data = response.json()
         getdata()
-
     }
 
-    let todo = todos.map((item: any, i: any) => {
+
+    let todo = todos.map((item: {
+        todo: string;
+        id: any;
+        completed: Boolean;
+    }, i: any) => {
+
+
+        let completed = async (id: any) => {
+
+            const response = await fetch(api + id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(
+                    { completed: item.completed ? false : true }
+                )
+            })
+            await getdata()
+
+        }
+
 
         return (
-            <div className="pt-4 px-1" key={i}>
+            <div className="pt-4 px-1 h-auto" key={i}>
                 <div className='w-full py-3 sm:px-3 px-2 h-auto text-black mb-5 flex justify-between items-center shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
-                    <button className={`w-5 h-5  rounded-full border border-black bg-blue-900`}>
-                    </button>
-                    <div className=' sm:w-full w-2/3 px-2 h-auto '>
+                    <button className={`w-5 h-5  rounded-full border border-black ${item.completed ? "bg-blue-500" : "bg-white"} `}
+                        onClick={() =>
+                            completed(item.id)
+                        }></button>
+                    <div className={`sm:w-full w-2/3 px-2 h-auto flex items-center ${item.completed ? "line-through decoration-1" : ""}`}>
                         {item.todo.replace(/['"]+/g, '')}
                     </div>
                     <button name='btn' onClick={() => DeleteElement(item.id)} value={i} ><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
