@@ -13,7 +13,6 @@ app.use(cors())
 app.get('/', async (req, res) => {
     try {
         const todoarray = await Todo.find()
-        console.log(todoarray);
         res.json(todoarray)
     }
     catch (err) {
@@ -34,7 +33,6 @@ app.post('/', async (req, res) => {
 
 app.put('/:id', async (req, res) => {
     const update = await Todo.findById(req.params.id)
-    console.log("update");
     update.completed = req.body.completed
     update.save()
     res.json(update)
